@@ -1,0 +1,34 @@
+
+.inputEditable {
+  min-width: 400px; /* Prevent the cancel button to be displayed in a new line (on small devices) */
+}
+
+.inputEditable-btn {
+  color: #004893;
+}
+
+.inputEditable-edit {
+  padding: 5px 0;   
+}
+
+.inputEditable-edit span {
+  margin-left: 10px;
+  color: #333;
+}
+
+.inputEditable-input .inputEditable-btn {
+  padding: 5px 0 5px 10px;
+}
+
+.inputEditable-submit {
+  font-weight: bold;
+}
+
+.inputEditable-cancel {
+  color: #999;
+}
+
+.inputEditable-tip {
+  margin-left: 10px;
+  color: #999;
+}

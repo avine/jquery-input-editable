@@ -1,0 +1,22 @@
+{
+  "name": "inputeditable",
+  "version": "1.0.0",
+  "description": "jQuery plugin to make any dom element editable",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/avine/inputEditable.git"
+  },
+  "author": "avine <s.francel@avine.fr>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/avine/inputEditable/issues"
+  },
+  "homepage": "https://github.com/avine/inputEditable#readme",
+  "dependencies": {
+    "jquery": "^3.2.1"
+  }
+}
