@@ -4,7 +4,9 @@
   "description": "jQuery plugin to make any dom element editable",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "eslint": "eslint src/*.js",
+    "start": "http-server ./ -o"
   },
   "repository": {
     "type": "git",
@@ -18,5 +20,9 @@
   "homepage": "https://github.com/avine/inputEditable#readme",
   "dependencies": {
     "jquery": "^3.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "http-server": "^0.9.0"
   }
 }
