@@ -17,9 +17,15 @@
   <h1>inputEditable</h1>
   <h2>jQuery plugin that make any dom element editable</h2>
 
-  <div class="edit-me" data-required data-placeholder="Fill me!" data-description="(edit me!)">
-    Hello world!
-  </div>
+  <form action="#" id="edit1" class="edit-me" data-required data-placeholder="Fill me!" data-description="(edit me!)">
+    15
+  </form>
+
+  <br />
+
+  <form action="#" id="edit2" class="edit-me" data-required data-placeholder="Fill me!" data-description="(edit me!)">
+    30
+  </form>
 
   <div id="log"></div>
 
@@ -41,7 +47,15 @@
       $log.append('<p>' + e.type + '</p>');
     });
 
-    $editMe.inputEditable();
+    $('#edit1').inputEditable({
+      type: 'email'
+    });
+
+    $('#edit2').inputEditable({
+      validate: function (value) {
+        return /^[0-9]+$/.test(value);
+      }
+    });
   </script>
 
 </body>

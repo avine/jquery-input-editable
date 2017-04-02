@@ -6,35 +6,39 @@
   var pluginName = 'inputEditable';
 
   var defaults = {
-    // Customize the way to set the input value.
+    // Customize the way to set the input value
     // (this is usefull when the input element is handled by another jQuery plugin).
-    setInputVal: function (value) {
+    set: function (value) {
       $(this).val(value);
     },
 
     // Customize the way to get the input value.
-    getInputVal: function () {
+    get: function () {
       return $(this).val();
     },
 
-    // Validate the input on client-side (before submit).
+    // Custom input validation on client-side (before submit).
     validate: function (/* value */) {
       return true;
     },
 
     // Handle the Ajax call (it's like a promise).
-    // (you should call either the `resolve` or `reject` parameter
+    // You should invoke either the `resolve` or `reject` parameter
     // (according to the server response).
     submit: function (value, resolve/* , reject */) {
       resolve();
     },
 
-    // UI buttons (use text or html).
-    btn: {
+    // UI actions (use text or html).
+    action: {
       edit: 'Edit',
       submit: 'Submit',
       cancel: 'Cancel',
     },
+
+    // Browser input validation using input type attribute (ie: email, number, ...)
+    // When defined the custom `validate` function is bypassed.
+    type: false,
 
     // Is the input field required ?
     required: false,
@@ -51,15 +55,14 @@
 
   function InputEditable(element, options) {
     this.$element = $(element);
-    this.isEdited = false;
 
     this.initOptions(options);
 
     this.initMarkup();
 
-    this.handleEdit();
-    this.handleCancel();
-    this.handleSubmit();
+    this.editable();
+    this.cancelable();
+    this.submittable();
 
     this.dispatch('init');
   }
@@ -78,6 +81,7 @@
 
       this.checkData('placeholder');
       this.checkData('description');
+      this.checkData('type');
       if (this.checkData('required')) {
         this.options.required = true;
       }
@@ -94,34 +98,37 @@
     },
 
     /*
-      The initial markup is simply:
-      -----------------------------
-      <article data-required data-placeholder="" data-description="">
+      Initial markup:
+      ---------------
+      <form data-required data-type="" data-placeholder="" data-description="">
         [VALUE]
-      </article>
+      </form>
 
-      The generated markup is:
-      ------------------------
-      <article data-required data-placeholder="" data-description="">
+      Generated markup:
+      -----------------
+      <form data-required data-type="" data-placeholder="" data-description="">
         <div class="inputEditable-text">
-          <a href="#" class="inputEditable-btn inputEditable-edit">
+          <a href="#" class="inputEditable-action inputEditable-edit">
             Edit
             <span>[VALUE]</span>
           </a>
         </div>
         <div class="inputEditable-input">
           <input value="[VALUE]">
-          <a href="#" class="inputEditable-btn inputEditable-submit">Submit</a>
-          <a href="#" class="inputEditable-btn inputEditable-cancel">Cancel</a>
+          <a href="#" class="inputEditable-action inputEditable-submit">Submit</a>
+          <a href="#" class="inputEditable-action inputEditable-cancel">Cancel</a>
         </div>
-      </article>
+      </form>
     */
     initMarkup: function () {
       this.initialText = (this.$element.text()).trim();
       this.$element.html('').addClass(this.getCss());
 
-      this.$textWrap = $('<div>').addClass(this.getCss('text')).css('display', 'inline-block');
-      this.$inputWrap = $('<div>').addClass(this.getCss('input')).css('display', 'none');
+      this.$textWrap = $('<div>').addClass(this.getCss('text'));
+      this.$inputWrap = $('<div>').addClass(this.getCss('input'));
+
+      this.isEdited = false;
+      this.renderMode();
 
       this.fillTextWrap();
       this.fillInputWrap();
@@ -130,7 +137,7 @@
     fillTextWrap: function () {
       var text = this.initialText || this.options.placeholder;
 
-      this.$edit = this.getButton('edit').appendTo(this.$textWrap);
+      this.$edit = this.getAction('edit').appendTo(this.$textWrap);
       this.$text = $('<span>').text(text).appendTo(this.$edit);
 
       this.$description = $('<i>');
@@ -147,16 +154,17 @@
       this.$input = $('<input />').attr({
         value: this.initialText,
         placeholder: this.options.placeholder,
+        type: this.options.type || 'text',
         required: !!this.options.required,
       }).appendTo(this.$inputWrap);
 
-      this.$submit = this.getButton('submit').appendTo(this.$inputWrap);
-      this.$cancel = this.getButton('cancel').appendTo(this.$inputWrap);
+      this.$submit = this.getAction('submit').appendTo(this.$inputWrap);
+      this.$cancel = this.getAction('cancel').appendTo(this.$inputWrap);
 
       this.$element.append(this.$inputWrap);
     },
 
-    handleEdit: function () {
+    editable: function () {
       this.$edit.click(function (e) {
         e.preventDefault();
         this.toggle();
@@ -164,42 +172,66 @@
       }.bind(this));
     },
 
-    handleCancel: function () {
+    cancelable: function () {
       this.$cancel.click(function (e) {
         e.preventDefault();
         if (!this.disableActions) {
-          this.options.setInputVal.call(this.$input[0], this.oldValue); // Reset the input value
+          this.options.set.call(this.$input[0], this.oldValue); // Reset the input value
           this.toggle();
           this.dispatch('cancel');
         }
       }.bind(this));
     },
 
-    handleSubmit: function () {
-      this.$submit.click(function (e) {
-        var newValue = this.getValue();
-        var isEmpty = !newValue && this.options.required;
-        var isInvalid = newValue && !this.options.validate.call(this.$input[0], newValue);
-        e.preventDefault();
-        if (!this.disableActions) {
-          if (newValue === this.oldValue) {
-            // The input value is unmodifed...
-            this.$cancel.trigger('click');
-          } else if (isEmpty || isInvalid) {
-            // The input value has error
-            this.dispatch('error', newValue);
-          } else {
+    submittable: function () {
+      this.$form = this.$input.closest('form');
+      if (this.options.type && this.$form.length) {
+
+        // TODO: improve this using: .noValidate=true and .checkValidity()
+        // (§ https://www.sitepoint.com/html5-forms-javascript-constraint-validation-api/)
+
+        // Use browser input validation (custom validation is bypassed)
+        this.$form.submit(function (e) {
+          e.preventDefault();
+          var newValue = this.getValue();
+          if (!this.disableActions) {
             // The input value is modified and validated...
-            this.$input.prop('disabled', true);
-            this.disableActions = true;
-            this.dispatch('post');
-            this.options.submit.call(this.$input[0],
-              newValue,
-              this.resolve.bind(this, newValue),
-              this.reject.bind(this, newValue));
+            this.process(newValue);
           }
-        }
-      }.bind(this));
+        }.bind(this));
+      } else {
+        // Use custom validation
+        this.$submit.click(function (e) {
+          var newValue = this.getValue();
+          var isEmpty = !newValue && this.options.required;
+          var isInvalid = newValue && !this.options.validate.call(this.$input[0], newValue);
+          e.preventDefault();
+          if (!this.disableActions) {
+            if (newValue === this.oldValue) {
+              // The input value is unmodifed...
+              this.$cancel.trigger('click');
+            } else if (isEmpty || isInvalid) {
+              // The input value has error
+              this.dispatch('error', newValue);
+            } else {
+              // The input value is modified and validated...
+              this.process(newValue);
+            }
+          }
+        }.bind(this));
+      }
+    },
+
+    // Process the Ajax call
+    process: function (newValue) {
+      this.$input.prop('disabled', true);
+      this.disableActions = true;
+      this.dispatch('post');
+      this.options.submit.call(this.$input[0],
+        newValue,
+        this.resolve.bind(this, newValue),
+        this.reject.bind(this, newValue)
+      );
     },
 
     resolve: function (newValue) {
@@ -218,8 +250,7 @@
     // Toggle view-mode and edit-mode
     toggle: function () {
       this.isEdited = !this.isEdited;
-      this.$textWrap.css('display', this.isEdited ? 'none' : 'inline-block');
-      this.$inputWrap.css('display', this.isEdited ? 'inline-block' : 'none');
+      this.renderMode();
       if (this.isEdited) {
         this.$input.prop('disabled', false);
         this.$input.focus();
@@ -227,6 +258,12 @@
       } else {
         this.oldValue = null;
       }
+    },
+
+    // Render view-mode or edit-mode
+    renderMode: function () {
+      this.$textWrap.css('display', this.isEdited ? 'none' : 'inline-block');
+      this.$inputWrap.css('display', this.isEdited ? 'inline-block' : 'none');
     },
 
     // Get the view-mode value (but not the placeholder)
@@ -242,14 +279,14 @@
 
     // Get the edit-mode value
     getValue: function () {
-      return this.options.getInputVal.call(this.$input[0]);
+      return this.options.get.call(this.$input[0]);
     },
 
-    getButton: function (action) {
-      return $('<a href="#"></a>')
-        .addClass(this.getCss('btn'))
+    getAction: function (action) {
+      return $(action === 'submit' ? '<button>' : '<a href="#"></a>')
+        .addClass(this.getCss('action'))
         .addClass(this.getCss(action))
-        .append(this.options.btn[action]);
+        .append(this.options.action[action]);
     },
 
     getCss: function (suffix) {

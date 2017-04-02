@@ -3,7 +3,7 @@
   min-width: 400px; /* Prevent the cancel button to be displayed in a new line (on small devices) */
 }
 
-.inputEditable-btn {
+.inputEditable-action {
   color: #004893;
 }
 
@@ -16,7 +16,7 @@
   color: #333;
 }
 
-.inputEditable-input .inputEditable-btn {
+.inputEditable-input .inputEditable-action {
   padding: 5px 0 5px 10px;
 }
 
