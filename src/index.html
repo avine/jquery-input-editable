@@ -14,25 +14,34 @@
 </head>
 <body>
 
-  <div class="test" data-placeholder="Fill me!" data-description="(edit me!)">
+  <h1>inputEditable</h1>
+  <h2>jQuery plugin that make any dom element editable</h2>
+
+  <div class="edit-me" data-required data-placeholder="Fill me!" data-description="(edit me!)">
     Hello world!
   </div>
 
   <div id="log"></div>
 
   <script>
-    $('.test').inputEditable();
+    var $editMe = $('.edit-me');
 
-    var events = ['edit', 'cancel', 'error', 'post', 'resolve', 'reject'].map(function (event) {
-      return event + '.inputEditable';
-    });
     var $log = $('#log');
-    $('.test').on(events.join(' '), function (e) {
+
+    var events = [
+      'init', 'edit', 'cancel', 'error', 'post', 'resolve', 'reject'
+    ].map(function (event) {
+      return event + '.inputEditable';
+    }).join(' ');
+
+    $editMe.on(events, function (e) {
       if ($log.children().length > 10) {
         $log.html('');
       }
       $log.append('<p>' + e.type + '</p>');
     });
+
+    $editMe.inputEditable();
   </script>
 
 </body>

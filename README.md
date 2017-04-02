@@ -1,2 +1,2 @@
 # inputEditable
-jQuery plugin to make any dom element editable
+jQuery plugin that make any dom element editable

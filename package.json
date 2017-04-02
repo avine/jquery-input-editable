@@ -1,7 +1,7 @@
 {
   "name": "inputeditable",
   "version": "1.0.0",
-  "description": "jQuery plugin to make any dom element editable",
+  "description": "jQuery plugin that make any dom element editable",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

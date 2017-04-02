@@ -60,6 +60,8 @@
     this.handleEdit();
     this.handleCancel();
     this.handleSubmit();
+
+    this.dispatch('init');
   }
 
   InputEditable.prototype = {
@@ -255,6 +257,7 @@
     },
 
     // The plugin dispatch the following events:
+    //    `init.inputEditable`      when the plugin is instanciated
     //    `edit.inputEditable`      when click on edit
     //    `cancel.inputEditable`    when click on cancel
     //    `error.inputEditable`     when click on submit and input value in error
