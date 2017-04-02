@@ -188,6 +188,7 @@
       if (this.options.type && this.$form.length) {
 
         // TODO: improve this using: .noValidate=true and .checkValidity()
+        // and perhaps .setCustomValidity() to add :invalid css pseudo-class...
         // (§ https://www.sitepoint.com/html5-forms-javascript-constraint-validation-api/)
 
         // Use browser input validation (custom validation is bypassed)
