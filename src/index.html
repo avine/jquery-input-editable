@@ -14,12 +14,25 @@
 </head>
 <body>
 
-  <article class="test">
+  <div class="test" data-placeholder="Fill me!" data-description="(edit me!)">
     Hello world!
-  </article>
+  </div>
+
+  <div id="log"></div>
 
   <script>
     $('.test').inputEditable();
+
+    var events = ['edit', 'cancel', 'error', 'post', 'resolve', 'reject'].map(function (event) {
+      return event + '.inputEditable';
+    });
+    var $log = $('#log');
+    $('.test').on(events.join(' '), function (e) {
+      if ($log.children().length == 10) {
+        $log.html('');
+      }
+      $log.append('<p>' + e.type + '</p>');
+    });
   </script>
 
 </body>
