@@ -28,7 +28,7 @@
     });
     var $log = $('#log');
     $('.test').on(events.join(' '), function (e) {
-      if ($log.children().length == 10) {
+      if ($log.children().length > 10) {
         $log.html('');
       }
       $log.append('<p>' + e.type + '</p>');
