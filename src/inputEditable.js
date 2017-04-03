@@ -213,10 +213,10 @@
       }.bind(this));
     },
 
-    // FIXME: j'ai loupé le cas où le champ n'a pas été modifié (équivalent de cancel...)
     submittable: function () {
       var preventDefault;
 
+      // FIXME: avec keypress (au lieu de keydown, on a toujours un cahractère de retard...)
       // Handle input constraints
       this.$input.on('keypress', function (e) { // Note: e.target === this.$input[0]
         var newValue = this.getValue();
@@ -226,11 +226,10 @@
         // Check native error
         if (e.target.checkValidity()) {
           // Set new custom error
-//          if (customError) {
           e.target.setCustomValidity(customError);
-            // FIXME: lancer l'erreur seulement au submit et pas à chaque keypress...
-//            this.dispatch('error', { value: newValue, message: customError });
-//          }
+        }
+        if (e.target.validationMessage) {
+          this.dispatch('error', { value: newValue, message: e.target.validationMessage });
         }
       }.bind(this));
 
@@ -245,7 +244,9 @@
           if (preventDefault) {
             e.preventDefault();
           }
-          if (!this.disableActions) {
+          if (newValue === this.oldValue) {
+            this.$cancel.trigger('click');
+          } else if (!this.disableActions) {
             // The input value is modified and validated...
             this.post(newValue);
           }
@@ -255,7 +256,7 @@
 
     // Process the Ajax call
     post: function (newValue) {
-      this.$input.prop('disabled', true);
+      this.$input.prop('disabled', true); // TODO: inclure également le bouton 'submit'...
       this.disableActions = true;
       this.dispatch('post');
       this.options.submit.call(this.$input[0],
@@ -273,7 +274,7 @@
     },
 
     reject: function (newValue) {
-      this.$input.prop('disabled', false);
+      this.$input.prop('disabled', false); // TODO: inclure également le bouton 'submit'...
       this.disableActions = false;
       this.dispatch('reject', newValue);
     },
@@ -283,7 +284,7 @@
       this.isEdited = !this.isEdited;
       this.renderMode();
       if (this.isEdited) {
-        this.$input.prop('disabled', false);
+        this.$input.prop('disabled', false); // TODO: inclure également le bouton 'submit'...
         this.$input.focus();
         this.oldValue = this.getValue(); // Store the oldValue (used on cancel and on submit)
       } else {
