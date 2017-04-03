@@ -10,7 +10,15 @@
 
   <script src="../node_modules/jquery/dist/jquery.min.js"></script>
   <script src="inputEditable.js"></script>
-  <script src="inputEditable.shim.js"></script>
+  <!--
+    <script src="inputEditable.shim.js"></script>
+    <script>
+      $.fn.inputEditable.shim();
+      $(document).ready(function () {
+        $('form').each(function () { this.noValidate = true; });
+      });
+    </script>
+  -->
 
   <style>
     * { outline: none; }
@@ -34,6 +42,7 @@
   <div id="log"></div>
 
   <script>
+
     var $editMe = $('.edit-me');
 
     var $log = $('#log');
@@ -44,11 +53,11 @@
       return event + '.inputEditable';
     }).join(' ');
 
-    $editMe.on(events, function (e) {
+    $editMe.on(events, function (e, data) {
       if ($log.children().length > 10) {
         $log.html('');
       }
-      $log.append('<p>' + e.type + '</p>');
+      $log.append('<p>' + e.type + ' ' + (data ? JSON.stringify(data) : '') + '</p>');
     });
 
     $('#edit1').inputEditable({

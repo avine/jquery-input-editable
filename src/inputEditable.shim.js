@@ -12,6 +12,43 @@
     plugin.shim = function () {
       plugin.shimEnabled = true;
       InputEditable.prototype.submittable = function () {
+        var preventDefault;
+
+        var validate = function () {
+          var newValue = this.getValue();
+          var isEmpty = !newValue && this.options.constraints.required;
+          var customError = newValue ? 
+            this.options.customValidity.call(this.$input[0], newValue) : '';
+          if (isEmpty || customError) {
+            // FIXME: il manque le message pour un champ vide...
+            this.dispatch('error', { value: newValue, message: customError });
+            //return false;
+          }
+          //return true;
+        }.bind(this);
+
+        // Handle input constraints
+        this.$input.on('keypress', validate);
+
+        // Handle form submit
+        this.$form = this.$input.closest('form');
+        if (this.$form.length) {
+          // Prevent default only when the form is dedicated to the plugin
+          // (otherwise it should be handled outside of this code).
+          preventDefault = this.$form[0] === this.$element[0];
+          this.$form.submit(function (e) {
+            var newValue = this.getValue();
+            if (preventDefault) {
+              e.preventDefault();
+            }
+            if (!this.disableActions && validate()) {
+              // The input value is modified and validated...
+              this.post(newValue);
+            }
+          }.bind(this));
+        }
+
+        /*
         this.$form = this.$input.closest('form');
         if (this.options.type && this.$form.length) {
 
@@ -49,6 +86,8 @@
             }
           }.bind(this));
         }
+        */
+
       };
     };
     // Apply shim

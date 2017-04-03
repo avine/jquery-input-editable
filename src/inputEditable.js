@@ -213,6 +213,7 @@
       }.bind(this));
     },
 
+    // FIXME: j'ai loupé le cas où le champ n'a pas été modifié (équivalent de cancel...)
     submittable: function () {
       var preventDefault;
 
@@ -225,7 +226,11 @@
         // Check native error
         if (e.target.checkValidity()) {
           // Set new custom error
+//          if (customError) {
           e.target.setCustomValidity(customError);
+            // FIXME: lancer l'erreur seulement au submit et pas à chaque keypress...
+//            this.dispatch('error', { value: newValue, message: customError });
+//          }
         }
       }.bind(this));
 
