@@ -13,6 +13,7 @@
         "linebreak-style": ["error", "unix"],
         "quotes": ["error", "single"],
         "semi": ["error", "always"],
+        "comma-dangle": ["error", "always-multiline"],
         "max-len": ["error", { "code": 100 }],
         "max-statements": ["error", { "max": 10 }],
         "complexity": ["error", 5]

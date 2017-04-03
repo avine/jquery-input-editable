@@ -18,8 +18,10 @@
     },
 
     // Custom input validation on client-side (before submit).
-    validate: function (/* value */) {
-      return true;
+    // Return the error message as string if the input value is invalid
+    // (otherwise an empty string).
+    customValidity: function (/* value */) {
+      return '';
     },
 
     // Handle the Ajax call (it's like a promise).
@@ -37,7 +39,7 @@
     },
 
     // Browser input validation using input type attribute (ie: email, number, ...)
-    // When defined the custom `validate` function is bypassed.
+    // When defined the custom `customValidity` function is bypassed.
     type: false,
 
     // Is the input field required ?
@@ -176,7 +178,9 @@
       this.$cancel.click(function (e) {
         e.preventDefault();
         if (!this.disableActions) {
-          this.options.set.call(this.$input[0], this.oldValue); // Reset the input value
+          // Reset the input value
+          this.options.set.call(this.$input[0], this.oldValue);
+
           this.toggle();
           this.dispatch('cancel');
         }
@@ -184,6 +188,41 @@
     },
 
     submittable: function () {
+      var preventDefault;
+
+      // Handle input constraints
+      this.$input.on('keypress', function (e) { // Note: e.target === this.$input[0]
+        var newValue = this.getValue();
+        var customError = newValue ? this.options.customValidity.call(e.target, newValue) : '';
+        // Remove previous custom error
+        e.target.setCustomValidity('');
+        // Check native error
+        if (e.target.checkValidity()) {
+          // Set new custom error
+          e.target.setCustomValidity(customError);
+        }
+      }.bind(this));
+
+      // Handle form submit
+      this.$form = this.$input.closest('form');
+      if (this.$form.length) {
+        // Prevent default only when the form is dedicated to the plugin
+        // (otherwise it should be handled outside of this code).
+        preventDefault = this.$form[0] === this.$element[0];
+        this.$form.submit(function (e) {
+          var newValue = this.getValue();
+          if (preventDefault) {
+            e.preventDefault();
+          }
+          if (!this.disableActions) {
+            // The input value is modified and validated...
+            this.post(newValue);
+          }
+        }.bind(this));
+      }
+    },
+
+    /*submittable_OLD: function () {
       this.$form = this.$input.closest('form');
       if (this.options.type && this.$form.length) {
 
@@ -197,7 +236,7 @@
           var newValue = this.getValue();
           if (!this.disableActions) {
             // The input value is modified and validated...
-            this.process(newValue);
+            this.post(newValue);
           }
         }.bind(this));
       } else {
@@ -205,7 +244,7 @@
         this.$submit.click(function (e) {
           var newValue = this.getValue();
           var isEmpty = !newValue && this.options.required;
-          var isInvalid = newValue && !this.options.validate.call(this.$input[0], newValue);
+          var isInvalid = newValue && !this.options.customValidity.call(this.$input[0], newValue);
           e.preventDefault();
           if (!this.disableActions) {
             if (newValue === this.oldValue) {
@@ -216,15 +255,15 @@
               this.dispatch('error', newValue);
             } else {
               // The input value is modified and validated...
-              this.process(newValue);
+              this.post(newValue);
             }
           }
         }.bind(this));
       }
-    },
+    },*/
 
     // Process the Ajax call
-    process: function (newValue) {
+    post: function (newValue) {
       this.$input.prop('disabled', true);
       this.disableActions = true;
       this.dispatch('post');

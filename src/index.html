@@ -51,7 +51,10 @@
     });
 
     $('#edit1').inputEditable({
-      type: 'email'
+      type: 'email',
+      validate: function (value) {
+        return !/\.fr$/.test(value) ? 'Must end with .fr' : '';
+      }
     });
 
     $('#edit2').inputEditable({
