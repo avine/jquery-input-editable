@@ -38,18 +38,24 @@
       cancel: 'Cancel',
     },
 
-    // Browser input validation using input type attribute (ie: email, number, ...)
-    // When defined the custom `customValidity` function is bypassed.
-    type: false,
-
-    // Is the input field required ?
-    required: false,
-
     // Input placeholder.
     placeholder: '',
 
     // Input description (displayed after the text value in view-mode).
     description: '',
+
+    // Native input validation using input type attribute (ie: email, number, ...)
+    type: false,
+
+    // Native input constraints (ie: required, min, max, step, maxlength)
+    constraints: {
+      required: false,
+      pattern: false,
+      min: false,
+      max: false,
+      step: false,
+      maxlength: false,
+    },
   };
 
   // Public methods
@@ -79,23 +85,31 @@
 
     // Set this.options from parameter
     initOptions: function (options) {
-      this.options = $.extend({}, defaults, options || {});
+      var constraint;
+      var isPresent;
 
-      this.checkData('placeholder');
-      this.checkData('description');
-      this.checkData('type');
-      if (this.checkData('required')) {
-        this.options.required = true;
+      this.options = $.extend(true, {}, defaults, options || {});
+
+      this.checkData('placeholder', this.options);
+      this.checkData('description', this.options);
+      this.checkData('type', this.options);
+
+      for (constraint in this.options.constraints) {
+        isPresent = this.checkData(constraint, this.options.constraints);
+        if (constraint === 'required' && isPresent) {
+          this.options.constraints.required = true;
+        }
       }
     },
 
-    // Overwrite this.options with data attributes
-    checkData: function (option) {
+    // Overwrite options parameter with input attributes
+    checkData: function (option, container) {
       var data = this.$element.data(option);
       if (typeof data !== 'undefined') {
-        this.options[option] = data;
+        container[option] = data;
         return true;
       }
+      // The attribute is not present
       return false;
     },
 
@@ -153,17 +167,29 @@
     },
 
     fillInputWrap: function () {
-      this.$input = $('<input />').attr({
-        value: this.initialText,
-        placeholder: this.options.placeholder,
-        type: this.options.type || 'text',
-        required: !!this.options.required,
-      }).appendTo(this.$inputWrap);
+      this.$input = $('<input />').attr(this.getInputAttr()).appendTo(this.$inputWrap);
 
       this.$submit = this.getAction('submit').appendTo(this.$inputWrap);
       this.$cancel = this.getAction('cancel').appendTo(this.$inputWrap);
 
       this.$element.append(this.$inputWrap);
+    },
+
+    getInputAttr: function () {
+      var attr = {
+        value: this.initialText,
+        placeholder: this.options.placeholder,
+        type: this.options.type || 'text',
+      };
+      var constraint;
+      var value;
+      for (constraint in this.options.constraints) {
+        value = this.options.constraints[constraint];
+        if (value !== false) {
+          attr[constraint] = value;
+        }
+      }
+      return attr;
     },
 
     editable: function () {
