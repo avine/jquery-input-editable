@@ -225,6 +225,9 @@
           e.target.setCustomValidity(customError);
           this.$input.trigger('invalid');
         }
+        // Store the validation status
+        // (usefull when `this.$form[0].noValidate === true` to prevent the .post() whatever).
+        this.isInvalid = !!e.target.validationMessage;
         /*// Notice: for 'error', watch the native 'invalid' event...
         if (e.target.validationMessage) {
           this.dispatch('error', { value: newValue, message: e.target.validationMessage });
@@ -246,7 +249,7 @@
           }
           if (newValue === this.oldValue) {
             this.$cancel.trigger('click');
-          } else if (!this.isDisabled) {
+          } else if (!this.isInvalid && !this.isDisabled) {
             // The input value is modified and validated...
             this.post(newValue);
           }
