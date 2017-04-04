@@ -144,7 +144,7 @@
       this.$textWrap = $('<div>').addClass(this.getCss('text'));
       this.$inputWrap = $('<div>').addClass(this.getCss('input'));
 
-      this.edition(false);
+      this.editMode(false);
 
       this.fillTextWrap();
       this.fillInputWrap();
@@ -195,7 +195,7 @@
     editable: function () {
       this.$edit.click(function (e) {
         e.preventDefault();
-        this.toggle();
+        this.toggleMode();
         this.dispatch('edit');
       }.bind(this));
     },
@@ -207,7 +207,7 @@
           // Reset the input value
           this.options.set.call(this.$input[0], this.oldValue);
 
-          this.toggle();
+          this.toggleMode();
           this.dispatch('cancel');
         }
       }.bind(this));
@@ -267,7 +267,7 @@
 
     resolve: function (newValue) {
       this.updateText();
-      this.toggle();
+      this.toggleMode();
       this.disable(false);
       this.dispatch('resolve', newValue);
     },
@@ -278,8 +278,8 @@
     },
 
     // Toggle view-mode and edit-mode
-    toggle: function () {
-      this.edition(!this.isEdited);
+    toggleMode: function () {
+      this.editMode(!this.isEdited);
       if (this.isEdited) {
         this.$input.focus();
         this.oldValue = this.getValue(); // Store the oldValue (used on cancel and on submit)
@@ -288,28 +288,40 @@
       }
     },
 
+    // Render view-mode or edit-mode
+    editMode: function (status) {
+      this.$textWrap.css('display', status ? 'none' : 'inline-block');
+      this.$inputWrap.css('display', status ? 'inline-block' : 'none');
+      this.isEdited = status;
+    },
+
     disable: function (status) {
       this.$input.prop('disabled', status);
       this.$submit.prop('disabled', status);
       this.isDisabled = status;
     },
 
-    // Render view-mode or edit-mode
-    edition: function (status) {
-      this.$textWrap.css('display', status ? 'none' : 'inline-block');
-      this.$inputWrap.css('display', status ? 'inline-block' : 'none');
-      this.isEdited = status;
+    // The plugin dispatch the following events:
+    //    `init.inputEditable`      when the plugin is instanciated
+    //    `edit.inputEditable`      when click on edit
+    //    `cancel.inputEditable`    when click on cancel
+    //    [DEPRECATED] `error.inputEditable`     when click on submit and input value in error
+    //    `post.inputEditable`      when click on submit and input value validated
+    //    `resolve.inputEditable`   when server response ok
+    //    `reject.inputEditable`    when server response ko
+    dispatch: function (event, data) {
+      this.$element.trigger(event + '.' + pluginName, data);
+    },
+
+    // Update the view-mode from the edit-mode (when resolve the Ajax call)
+    updateText: function () {
+      this.$text.text(this.getValue() || this.options.placeholder || '');
     },
 
     // Get the view-mode value (but not the placeholder)
     getText: function () {
       var text = this.$text.text();
       return text !== this.options.placeholder ? text : '';
-    },
-
-    // Update the view-mode from the edit-mode (when resolve the Ajax call)
-    updateText: function () {
-      this.$text.text(this.getValue() || this.options.placeholder || '');
     },
 
     // Get the edit-mode value
@@ -326,18 +338,6 @@
 
     getCss: function (suffix) {
       return pluginName + (suffix ? '-' + suffix : '');
-    },
-
-    // The plugin dispatch the following events:
-    //    `init.inputEditable`      when the plugin is instanciated
-    //    `edit.inputEditable`      when click on edit
-    //    `cancel.inputEditable`    when click on cancel
-    //    [DEPRECATED] `error.inputEditable`     when click on submit and input value in error
-    //    `post.inputEditable`      when click on submit and input value validated
-    //    `resolve.inputEditable`   when server response ok
-    //    `reject.inputEditable`    when server response ko
-    dispatch: function (event, data) {
-      this.$element.trigger(event + '.' + pluginName, data);
     },
   };
 
