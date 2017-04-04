@@ -11,10 +11,9 @@
     // Define a callable shim (usefull for testing)
     plugin.shim = function () {
       plugin.shimEnabled = true;
-      InputEditable.prototype.submittable = function () {
-        var preventDefault;
+      InputEditable.prototype.validable = function () {
 
-        var validate = function () {
+        this.$input.on('input', function () {
           var newValue = this.getValue();
           var isEmpty = !newValue && this.options.constraints.required;
           var customError = newValue ? 
@@ -25,12 +24,10 @@
             //return false;
           }
           //return true;
-        }.bind(this);
+        }.bind(this));
 
-        // Handle input constraints
-        this.$input.on('keypress', validate);
-
-        // Handle form submit
+        /*// Handle form submit
+        var preventDefault;
         this.$form = this.$input.closest('form');
         if (this.$form.length) {
           // Prevent default only when the form is dedicated to the plugin
@@ -46,7 +43,7 @@
               this.post(newValue);
             }
           }.bind(this));
-        }
+        }*/
 
         /*
         this.$form = this.$input.closest('form');

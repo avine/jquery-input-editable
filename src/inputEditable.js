@@ -44,10 +44,10 @@
     // Input description (displayed after the text value in view-mode).
     description: '',
 
-    // Native input validation using input type attribute (ie: email, number, ...)
+    // Native input validation using type attribute (ie: email, number, ...)
     type: false,
 
-    // Native input constraints (ie: required, min, max, step, maxlength)
+    // Native input validation using constraints
     constraints: {
       required: false,
       pattern: false,
@@ -70,6 +70,7 @@
 
     this.editable();
     this.cancelable();
+    this.validable();
     this.submittable();
 
     this.dispatch('init');
@@ -143,8 +144,7 @@
       this.$textWrap = $('<div>').addClass(this.getCss('text'));
       this.$inputWrap = $('<div>').addClass(this.getCss('input'));
 
-      this.isEdited = false;
-      this.renderMode();
+      this.edition(false);
 
       this.fillTextWrap();
       this.fillInputWrap();
@@ -203,7 +203,7 @@
     cancelable: function () {
       this.$cancel.click(function (e) {
         e.preventDefault();
-        if (!this.disableActions) {
+        if (!this.isDisabled) {
           // Reset the input value
           this.options.set.call(this.$input[0], this.oldValue);
 
@@ -213,27 +213,27 @@
       }.bind(this));
     },
 
-    submittable: function () {
-      var preventDefault;
-
-      // FIXME: avec keypress (au lieu de keydown, on a toujours un cahractère de retard...)
-      // Handle input constraints
-      this.$input.on('keypress', function (e) { // Note: e.target === this.$input[0]
+    validable: function () {
+      this.$input.on('input', function (e) { // Note: e.target === this.$input[0]
         var newValue = this.getValue();
         var customError = newValue ? this.options.customValidity.call(e.target, newValue) : '';
         // Remove previous custom error
         e.target.setCustomValidity('');
         // Check native error
-        if (e.target.checkValidity()) {
+        if (e.target.checkValidity() && customError) {
           // Set new custom error
           e.target.setCustomValidity(customError);
+          this.$input.trigger('invalid');
         }
+        /*// Notice: for 'error', watch the native 'invalid' event...
         if (e.target.validationMessage) {
           this.dispatch('error', { value: newValue, message: e.target.validationMessage });
-        }
+        }*/
       }.bind(this));
+    },
 
-      // Handle form submit
+    submittable: function () {
+      var preventDefault;
       this.$form = this.$input.closest('form');
       if (this.$form.length) {
         // Prevent default only when the form is dedicated to the plugin
@@ -246,7 +246,7 @@
           }
           if (newValue === this.oldValue) {
             this.$cancel.trigger('click');
-          } else if (!this.disableActions) {
+          } else if (!this.isDisabled) {
             // The input value is modified and validated...
             this.post(newValue);
           }
@@ -256,8 +256,7 @@
 
     // Process the Ajax call
     post: function (newValue) {
-      this.$input.prop('disabled', true); // TODO: inclure également le bouton 'submit'...
-      this.disableActions = true;
+      this.disable(true);
       this.dispatch('post');
       this.options.submit.call(this.$input[0],
         newValue,
@@ -269,22 +268,19 @@
     resolve: function (newValue) {
       this.updateText();
       this.toggle();
-      this.disableActions = false;
+      this.disable(false);
       this.dispatch('resolve', newValue);
     },
 
     reject: function (newValue) {
-      this.$input.prop('disabled', false); // TODO: inclure également le bouton 'submit'...
-      this.disableActions = false;
+      this.disable(false);
       this.dispatch('reject', newValue);
     },
 
     // Toggle view-mode and edit-mode
     toggle: function () {
-      this.isEdited = !this.isEdited;
-      this.renderMode();
+      this.edition(!this.isEdited);
       if (this.isEdited) {
-        this.$input.prop('disabled', false); // TODO: inclure également le bouton 'submit'...
         this.$input.focus();
         this.oldValue = this.getValue(); // Store the oldValue (used on cancel and on submit)
       } else {
@@ -292,10 +288,17 @@
       }
     },
 
+    disable: function (status) {
+      this.$input.prop('disabled', status);
+      this.$submit.prop('disabled', status);
+      this.isDisabled = status;
+    },
+
     // Render view-mode or edit-mode
-    renderMode: function () {
-      this.$textWrap.css('display', this.isEdited ? 'none' : 'inline-block');
-      this.$inputWrap.css('display', this.isEdited ? 'inline-block' : 'none');
+    edition: function (status) {
+      this.$textWrap.css('display', status ? 'none' : 'inline-block');
+      this.$inputWrap.css('display', status ? 'inline-block' : 'none');
+      this.isEdited = status;
     },
 
     // Get the view-mode value (but not the placeholder)
@@ -329,7 +332,7 @@
     //    `init.inputEditable`      when the plugin is instanciated
     //    `edit.inputEditable`      when click on edit
     //    `cancel.inputEditable`    when click on cancel
-    //    `error.inputEditable`     when click on submit and input value in error
+    //    [DEPRECATED] `error.inputEditable`     when click on submit and input value in error
     //    `post.inputEditable`      when click on submit and input value validated
     //    `resolve.inputEditable`   when server response ok
     //    `reject.inputEditable`    when server response ko

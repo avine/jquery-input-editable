@@ -64,6 +64,11 @@
       type: 'email',
       customValidity: function (value) {
         return !/\.fr$/.test(value) ? 'Must end with .fr' : '';
+      },
+      submit: function(value, resolve) {
+        setTimeout(function () {
+          resolve();
+        }, 2000);
       }
     });
 
@@ -74,6 +79,11 @@
       constraints: {
         required: true,
         maxlength: 10
+      },
+      submit: function(value, resolve) {
+        setTimeout(function () {
+          resolve();
+        }, 2000);
       }
     });
   </script>
