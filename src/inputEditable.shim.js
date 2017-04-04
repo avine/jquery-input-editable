@@ -20,15 +20,21 @@
       });
 
       InputEditable.prototype.validable = function () {
-        this.$input.on('input', function () {
+        this.$input.on('input', function (e) { // Note: e.target === this.$input[0]
           var newValue = this.getValue();
           var isEmpty = !newValue && this.options.constraints.required;
           var customError = '';
           if (newValue) {
-            customError = this.options.customValidity.call(this.$input[0], newValue);
+            customError = this.options.customValidity.call(e.target, newValue);
           }
           if (isEmpty || customError) {
             // FIXME: il manque le message pour un champ vide...
+
+            // FIXME: it's not working! validationMessage is readonly!
+            // This, it will not works for testing...
+            //e.target.validationMessage = customError;
+            //this.$input.trigger('invalid');
+
             this.dispatch('error', { value: newValue, message: customError });
             this.isInvalid = true;
           } else {

@@ -62,7 +62,7 @@
     var $log = $('#log');
 
     var events = [
-      'init', 'edit', 'cancel', 'error', 'post', 'resolve', 'reject' // [DEPRECATED] 'error' (but still used in shim...)
+      'init', 'edit', 'cancel', 'error', 'post', 'resolve', 'reject' // 'error' is DEPRECATED (but still used in shim...)
     ].map(function (event) {
       return event + '.inputEditable';
     }).join(' ');
@@ -71,7 +71,7 @@
       if ($log.children().length >= 5) {
         $log.html('');
       }
-      $log.append('<p>' + e.type + ' ' + (data ? JSON.stringify(data) : '') + '</p>');
+      $log.prepend('<p>' + e.type + ' ' + (data ? JSON.stringify(data) : '') + '</p>');
     });
 
     $('#edit1').inputEditable({
@@ -113,7 +113,7 @@
       if ($log.children().length >= 5) {
         $log.html('');
       }
-      $log.append('<p>' + e.type + ' ' + e.target.validationMessage + '</p>');
+      $log.prepend('<p>' + e.type + ' ' + e.target.validationMessage + '</p>');
     });
   </script>
 

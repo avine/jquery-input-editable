@@ -363,7 +363,7 @@
         plugin = new InputEditable(this, options);
         $.data(this, 'plugin_' + pluginName, plugin);
       }/* else if (options) {
-        console.error('Can not refesh plugin instance with new options.');
+        console.warn('Can not refesh plugin instance with new options.');
       } */
       if (method) {
         // Invoke plugin method
