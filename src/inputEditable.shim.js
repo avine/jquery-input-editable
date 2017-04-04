@@ -10,7 +10,15 @@
   if (plugin) {
     // Define a callable shim (usefull for testing)
     plugin.shim = function () {
+
       plugin.shimEnabled = true;
+
+      $.extend(plugin.settings, {
+        shim: {
+
+        },
+      });
+
       InputEditable.prototype.validable = function () {
         this.$input.on('input', function () {
           var newValue = this.getValue();

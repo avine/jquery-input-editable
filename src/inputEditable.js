@@ -5,7 +5,7 @@
 
   var pluginName = 'inputEditable';
 
-  var defaults = {
+  var settings = {
     // Customize the way to set the input value
     // (this is usefull when the input element is handled by another jQuery plugin).
     set: function (value) {
@@ -89,7 +89,7 @@
       var constraint;
       var isPresent;
 
-      this.options = $.extend(true, {}, defaults, options || {});
+      this.options = $.extend(true, {}, settings, options || {});
 
       this.checkData('placeholder', this.options);
       this.checkData('description', this.options);
@@ -377,6 +377,9 @@
     return this;
   };
 
-  // Expose the class definition
+  // Expose plugin features
   $.fn[pluginName].definition = InputEditable;
+  $.fn[pluginName].settings = settings;
+  $.fn[pluginName].methods = methods;
+
 }(jQuery));
