@@ -72,7 +72,7 @@
     this.validable();
     this.submittable();
 
-    this.dispatch('ready');
+    this.ready();
   }
 
   InputEditable.prototype = {
@@ -232,14 +232,6 @@
           this.dispatch('error', { value: newValue, message: e.target.validationMessage });
         }*/
       }.bind(this));
-
-      // If the initial input value is valid against native error 
-      // but is invalid against custom error, then the css `:invalid` is
-      // not applied until the user writes something and fires the `input`event.
-      // To fix this issue, we need to eventually trigger the `input`event manually.
-      if (this.options.customValidity.call(this.$input[0], this.getValue())) {
-        this.$input.trigger('input');
-      }
     },
 
     submittable: function () {
@@ -261,6 +253,18 @@
             this.request(newValue);
           }
         }.bind(this));
+      }
+    },
+
+    ready: function () {
+      this.dispatch('ready');
+
+      // If the initial input value is valid against native error 
+      // but is invalid against custom error, then the css `:invalid` is
+      // not applied until the user writes something and fires the `input`event.
+      // To fix this issue, we need to eventually trigger the `input`event manually.
+      if (this.options.customValidity.call(this.$input[0], this.getValue())) {
+        this.$input.trigger('input');
       }
     },
 
