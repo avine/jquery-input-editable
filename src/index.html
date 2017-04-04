@@ -10,18 +10,32 @@
 
   <script src="../node_modules/jquery/dist/jquery.min.js"></script>
   <script src="inputEditable.js"></script>
+
   <!--
-    <script src="inputEditable.shim.js"></script>
-    <script>
-      $.fn.inputEditable.shim();
-      $(document).ready(function () {
-        $('form').each(function () { this.noValidate = true; });
-      });
-    </script>
+  <script src="inputEditable.shim.js"></script>
+  <script>
+    $.fn.inputEditable.shim();
+    $(document).ready(function () {
+      // Use this to emulate old browser...
+      $('form').each(function () { this.noValidate = true; });
+    });
+  </script>
   -->
 
   <style>
     * { outline: none; }
+
+    #log {
+      margin: 20px 0;
+      max-width: 300px;
+      overflow: auto;
+      border: 1px solid #ddd;
+      padding: 10px;
+      font: 14px normal monospace;
+    }
+    #log p {
+      border-bottom: 1px dotted #ddd;
+    }
   </style>
 </head>
 <body>
@@ -48,13 +62,13 @@
     var $log = $('#log');
 
     var events = [
-      'init', 'edit', 'cancel', 'error', 'post', 'resolve', 'reject'
+      'init', 'edit', 'cancel', 'error', 'post', 'resolve', 'reject' // [DEPRECATED] 'error' (but still used in shim...)
     ].map(function (event) {
       return event + '.inputEditable';
     }).join(' ');
 
     $editMe.on(events, function (e, data) {
-      if ($log.children().length > 10) {
+      if ($log.children().length >= 5) {
         $log.html('');
       }
       $log.append('<p>' + e.type + ' ' + (data ? JSON.stringify(data) : '') + '</p>');
@@ -85,6 +99,21 @@
           resolve();
         }, 2000);
       }
+    });
+
+    /*
+    // Use this to emulate old browser...
+    $('input').on('invalid', function (e) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    });
+    */
+
+    $('input').on('invalid', function (e) {
+      if ($log.children().length >= 5) {
+        $log.html('');
+      }
+      $log.append('<p>' + e.type + ' ' + e.target.validationMessage + '</p>');
     });
   </script>
 
