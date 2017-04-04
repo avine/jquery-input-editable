@@ -8,7 +8,7 @@
 }
 
 .inputEditable-edit {
-  padding: 5px 0;   
+  /*padding: 5px 0;*/  
 }
 
 .inputEditable-edit span {
@@ -17,7 +17,7 @@
 }
 
 .inputEditable-input .inputEditable-action {
-  padding: 5px 0 5px 10px;
+  /*padding: 5px 0 5px 10px;*/
 }
 
 .inputEditable-submit {
@@ -33,6 +33,14 @@
   color: #999;
 }
 
+.inputEditable-input input {
+  border: 1px solid #ccc;
+}
+
 .inputEditable-input input:invalid {
-  border: 1px solid red;
+  border-color: orange;
+}
+
+.inputEditable-input input:focus:valid {
+  border-color: green;
 }
