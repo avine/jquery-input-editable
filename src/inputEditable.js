@@ -72,7 +72,7 @@
     this.validable();
     this.submittable();
 
-    this.dispatch('init');
+    this.dispatch('ready');
   }
 
   InputEditable.prototype = {
@@ -232,6 +232,14 @@
           this.dispatch('error', { value: newValue, message: e.target.validationMessage });
         }*/
       }.bind(this));
+
+      // If the initial input value is valid against native error 
+      // but is invalid against custom error, then the css `:invalid` is
+      // not applied until the user writes something and fires the `input`event.
+      // To fix this issue, we need to eventually trigger the `input`event manually.
+      if (this.options.customValidity.call(this.$input[0], this.getValue())) {
+        this.$input.trigger('input');
+      }
     },
 
     submittable: function () {
@@ -304,7 +312,7 @@
     },
 
     // The plugin dispatch the following events:
-    //    `init.inputEditable`      when the plugin is instanciated
+    //    `ready.inputEditable`     when the plugin is ready to use
     //    `edit.inputEditable`      when click on edit
     //    `cancel.inputEditable`    when click on cancel
     //    [DEPRECATED] `error.inputEditable`     when click on submit and input value in error
