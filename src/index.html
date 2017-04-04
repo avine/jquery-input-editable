@@ -44,7 +44,7 @@
   <h2>jQuery plugin that make any dom element editable</h2>
 
   <form action="#" id="edit1" class="edit-me" data-required data-placeholder="Fill me!" data-description="(edit me!)">
-    15
+    15@a.com
   </form>
 
   <br />
@@ -62,7 +62,7 @@
     var $log = $('#log');
 
     var events = [
-      'init', 'edit', 'cancel', 'error', 'post', 'resolve', 'reject' // 'error' is DEPRECATED (but still used in shim...)
+      'init', 'edit', 'cancel', 'error', 'request', 'resolve', 'reject' // 'error' is DEPRECATED (but still used in shim...)
     ].map(function (event) {
       return event + '.inputEditable';
     }).join(' ');

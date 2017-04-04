@@ -24,7 +24,7 @@
       return '';
     },
 
-    // Handle the Ajax call (it's like a promise).
+    // Handle the Ajax request (it's like a promise).
     // You should invoke either the `resolve` or `reject` parameter
     // (according to the server response).
     submit: function (value, resolve/* , reject */) {
@@ -65,7 +65,6 @@
     this.$element = $(element);
 
     this.initOptions(options);
-
     this.initMarkup();
 
     this.editable();
@@ -226,7 +225,7 @@
           this.$input.trigger('invalid');
         }
         // Store the validation status
-        // (usefull when `this.$form[0].noValidate === true` to prevent the .post() whatever).
+        // (usefull when `this.$form[0].noValidate === true` to prevent the .request() whatever).
         this.isInvalid = !!e.target.validationMessage;
         /*// Notice: for 'error', watch the native 'invalid' event...
         if (e.target.validationMessage) {
@@ -251,16 +250,16 @@
             this.$cancel.trigger('click');
           } else if (!this.isInvalid && !this.isDisabled) {
             // The input value is modified and validated...
-            this.post(newValue);
+            this.request(newValue);
           }
         }.bind(this));
       }
     },
 
-    // Process the Ajax call
-    post: function (newValue) {
+    // Process the server request
+    request: function (newValue) {
       this.disable(true);
-      this.dispatch('post');
+      this.dispatch('request');
       this.options.submit.call(this.$input[0],
         newValue,
         this.resolve.bind(this, newValue),
@@ -309,14 +308,14 @@
     //    `edit.inputEditable`      when click on edit
     //    `cancel.inputEditable`    when click on cancel
     //    [DEPRECATED] `error.inputEditable`     when click on submit and input value in error
-    //    `post.inputEditable`      when click on submit and input value validated
+    //    `request.inputEditable`   when click on submit and input value validated
     //    `resolve.inputEditable`   when server response ok
     //    `reject.inputEditable`    when server response ko
     dispatch: function (event, data) {
       this.$element.trigger(event + '.' + pluginName, data);
     },
 
-    // Update the view-mode from the edit-mode (when resolve the Ajax call)
+    // Update the view-mode from the edit-mode (when resolve the Ajax request)
     updateText: function () {
       this.$text.text(this.getValue() || this.options.placeholder || '');
     },
