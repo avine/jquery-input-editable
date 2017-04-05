@@ -34,9 +34,13 @@
     // UI actions (use text or html).
     action: {
       edit: 'Edit',
-      submit: 'Submit',
       cancel: 'Cancel',
+      submit: 'Submit',
     },
+
+    // Position of the 'edit' and 'cancel' links
+    // (note that the 'submit' button is always at the right).
+    toggleAtRight: false,
 
     // Input placeholder.
     placeholder: '',
@@ -140,8 +144,8 @@
       this.initialText = (this.$element.text()).trim();
       this.$element.html('').addClass(this.getCss());
 
-      this.$textWrap = $('<div>').addClass(this.getCss('text'));
-      this.$inputWrap = $('<div>').addClass(this.getCss('input'));
+      this.$textWrap = $('<div>').addClass(this.getCss('text-wrap'));
+      this.$inputWrap = $('<div>').addClass(this.getCss('input-wrap'));
 
       this.editMode(false);
 
@@ -151,25 +155,28 @@
 
     fillTextWrap: function () {
       var text = this.initialText || this.options.placeholder;
+      var insert = this.options.toggleAtRight ? 'prependTo' : 'appendTo';
 
       this.$edit = this.getAction('edit').appendTo(this.$textWrap);
-      this.$text = $('<span>').text(text).appendTo(this.$edit);
+      this.$text = $('<span>').addClass(this.getCss('text')).text(text)[insert](this.$textWrap);
 
-      this.$description = $('<i>');
+      this.$description = $('<i>').addClass(this.getCss('description'));
       if (this.options.description) {
-        this.$description
-          .text(this.options.description)
-          .addClass(this.getCss('description'))
-          .appendTo(this.$textWrap);
+        this.$description.text(this.options.description).appendTo(this.$textWrap);
       }
       this.$element.append(this.$textWrap);
     },
 
     fillInputWrap: function () {
-      this.$input = $('<input />').attr(this.getInputAttr()).appendTo(this.$inputWrap);
+      var insert = this.options.toggleAtRight ? 'appendTo' : 'prependTo';
+
+      this.$input = $('<input />')
+        .addClass(this.getCss('input'))
+        .attr(this.getInputAttr())
+        .appendTo(this.$inputWrap);
 
       this.$submit = this.getAction('submit').appendTo(this.$inputWrap);
-      this.$cancel = this.getAction('cancel').appendTo(this.$inputWrap);
+      this.$cancel = this.getAction('cancel')[insert](this.$inputWrap);
 
       this.$element.append(this.$inputWrap);
     },
@@ -248,7 +255,7 @@
           }
           if (newValue === this.oldValue) {
             this.$cancel.trigger('click');
-          } else if (!this.isInvalid && !this.isDisabled) {
+          } else if (!this.isInvalid) {
             // The input value is modified and validated...
             this.request(newValue);
           }
@@ -345,7 +352,6 @@
 
     getAction: function (action) {
       return $(action === 'submit' ? '<button>' : '<a href="#"></a>')
-        .addClass(this.getCss('action'))
         .addClass(this.getCss(action))
         .append(this.options.action[action]);
     },

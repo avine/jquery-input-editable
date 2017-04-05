@@ -1,46 +1,29 @@
 
-.inputEditable {
-  min-width: 400px; /* Prevent the cancel button to be displayed in a new line (on small devices) */
-}
-
-.inputEditable-action {
-  color: #004893;
+.inputEditable-text-wrap > :nth-child(n + 2),
+.inputEditable-input-wrap > :nth-child(n + 2) {
+  margin-left: 10px;
 }
 
 .inputEditable-edit {
-  /*padding: 5px 0;*/  
+  color: #004893;
 }
-
-.inputEditable-edit span {
-  margin-left: 10px;
-  color: #333;
-}
-
-.inputEditable-input .inputEditable-action {
-  /*padding: 5px 0 5px 10px;*/
-}
-
-.inputEditable-submit {
-  font-weight: bold;
+.inputEditable-description {  
+  color: #777;
 }
 
 .inputEditable-cancel {
   color: #999;
 }
-
-.inputEditable-description {
-  margin-left: 10px;
-  color: #999;
+.inputEditable-submit {  
+  font-weight: bold;
 }
 
-.inputEditable-input input {
+.inputEditable-input {
   border: 1px solid #ccc;
 }
-
-.inputEditable-input input:invalid {
+.inputEditable-input:invalid {
   border-color: orange;
 }
-
-.inputEditable-input input:focus:valid {
+.inputEditable-input:focus:valid {
   border-color: green;
 }
