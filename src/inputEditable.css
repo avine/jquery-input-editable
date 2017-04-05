@@ -1,4 +1,9 @@
 
+.inputEditable-text-wrap,
+.inputEditable-input-wrap {
+  line-height: 1.5em;
+}
+
 .inputEditable-text-wrap > :nth-child(n + 2),
 .inputEditable-input-wrap > :nth-child(n + 2) {
   margin-left: 10px;
@@ -7,6 +12,11 @@
 .inputEditable-edit {
   color: #004893;
 }
+
+.inputEditable-text {
+  
+}
+
 .inputEditable-description {  
   color: #777;
 }
@@ -14,16 +24,21 @@
 .inputEditable-cancel {
   color: #999;
 }
-.inputEditable-submit {  
-  font-weight: bold;
-}
 
 .inputEditable-input {
   border: 1px solid #ccc;
+  font-family: inherit;
+  font-size: inherit;
 }
+
 .inputEditable-input:invalid {
   border-color: orange;
 }
+
 .inputEditable-input:focus:valid {
   border-color: green;
+}
+
+.inputEditable-submit {  
+  font-weight: bold;
 }
