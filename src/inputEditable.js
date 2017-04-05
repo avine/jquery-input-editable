@@ -198,7 +198,7 @@
     },
 
     editable: function () {
-      this.$edit.click(function (e) {
+      this.$edit.add(this.$text).click(function (e) {
         e.preventDefault();
         this.toggleMode();
         this.dispatch('edit');
