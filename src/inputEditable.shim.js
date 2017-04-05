@@ -10,33 +10,18 @@
   if (plugin) {
     // Define a callable shim (usefull for testing)
     plugin.shim = function () {
-
+      // Indicate that the shim is enabled.      
       plugin.shimEnabled = true;
 
-      $.extend(plugin.settings, {
-        shim: {
-
-        },
-      });
-
+      // Rewrite the method just for old browser compatibility...
+      // This simplified version only checks `this.options.customValidity`.
       InputEditable.prototype.validable = function () {
         this.$input.on('input', function (e) { // Note: e.target === this.$input[0]
           var newValue = this.getValue();
-          var isEmpty = !newValue && this.options.constraints.required;
-          var customError = '';
-          if (newValue) {
-            customError = this.options.customValidity.call(e.target, newValue);
-          }
-          if (isEmpty || customError) {
-            // FIXME: il manque le message pour un champ vide...
-
-            // FIXME: it's not working! validationMessage is readonly!
-            // This, it will not works for testing...
-            //e.target.validationMessage = customError;
-            //this.$input.trigger('invalid');
-
-            this.dispatch('error', { value: newValue, message: customError });
+          var customError = newValue ? this.options.customValidity.call(e.target, newValue) : '';
+          if (customError) {
             this.isInvalid = true;
+            this.dispatch('invalid', { value: newValue, message: customError });
           } else {
             this.isInvalid = false;
           }

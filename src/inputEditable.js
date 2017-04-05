@@ -233,10 +233,11 @@
         // Store the validation status
         // (usefull when `this.$form[0].noValidate === true` to prevent the .request() whatever).
         this.isInvalid = !!e.target.validationMessage;
-        /*// Notice: for 'error', watch the native 'invalid' event...
+        // Dispatch a special event 'invalid.inputEditable'.
+        // But you can simply listen the native event 'invalid' (unless you are using the shim).
         if (e.target.validationMessage) {
-          this.dispatch('error', { value: newValue, message: e.target.validationMessage });
-        }*/
+          this.dispatch('invalid', { value: newValue, message: e.target.validationMessage });
+        }
       }.bind(this));
     },
 
@@ -325,10 +326,10 @@
     //    `ready.inputEditable`     when the plugin is ready to use
     //    `edit.inputEditable`      when click on edit
     //    `cancel.inputEditable`    when click on cancel
-    //    [DEPRECATED] `error.inputEditable`     when click on submit and input value in error
-    //    `request.inputEditable`   when click on submit and input value validated
-    //    `resolve.inputEditable`   when server response ok
-    //    `reject.inputEditable`    when server response ko
+    //    `invalid.inputEditable`   when click on submit with bad input value
+    //    `request.inputEditable`   when click on submit with good input value
+    //    `resolve.inputEditable`   when server responds ok
+    //    `reject.inputEditable`    when server responds ko
     dispatch: function (event, data) {
       this.$element.trigger(event + '.' + pluginName, data);
     },

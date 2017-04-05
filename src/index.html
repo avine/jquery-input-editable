@@ -66,7 +66,7 @@
     var $log = $('#log');
 
     var events = [
-      'ready', 'edit', 'cancel', 'error', 'request', 'resolve', 'reject' // 'error' is DEPRECATED (but still used in shim...)
+      'ready', 'edit', 'cancel', 'invalid', 'request', 'resolve', 'reject'
     ].map(function (event) {
       return event + '.inputEditable';
     }).join(' ');
