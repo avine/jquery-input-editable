@@ -120,23 +120,22 @@
     /*
       Initial markup:
       ---------------
-      <form data-required data-type="" data-placeholder="" data-description="">
+      <form data-description="[DESC]">
         [VALUE]
       </form>
 
       Generated markup:
       -----------------
-      <form data-required data-type="" data-placeholder="" data-description="">
-        <div class="inputEditable-text">
-          <a href="#" class="inputEditable-action inputEditable-edit">
-            Edit
-            <span>[VALUE]</span>
-          </a>
+      <form data-description="[DESC]">
+        <div class="inputEditable-text-wrap">
+          <a href="#" class="inputEditable-edit">Edit</a>
+          <span class="inputEditable-text">[VALUE]</span>
+          <i class="inputEditable-description">[DESC]</i>
         </div>
-        <div class="inputEditable-input">
-          <input value="[VALUE]">
-          <a href="#" class="inputEditable-action inputEditable-submit">Submit</a>
-          <a href="#" class="inputEditable-action inputEditable-cancel">Cancel</a>
+        <div class="inputEditable-input-wrap">
+          <a href="#" class="inputEditable-cancel">Cancel</a>
+          <input value="[VALUE]" class="inputEditable-input">
+          <a href="#" class="inputEditable-submit">Submit</a>
         </div>
       </form>
     */
