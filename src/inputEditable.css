@@ -4,13 +4,30 @@
   line-height: 1.5em;
 }
 
-.inputEditable-text-wrap > :nth-child(n + 2),
+.inputEditable-text-wrap > *,
+.inputEditable-input-wrap > * {
+  display: inline-block;
+  margin: 0;
+  padding: 3px 6px;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  line-height: inherit;
+  vertical-align: middle;
+}
+
+.inputEditable-input,
+.inputEditable-submit {
+  border-color: #ccc;
+}
+
+/*.inputEditable-text-wrap > :nth-child(n + 2),
 .inputEditable-input-wrap > :nth-child(n + 2) {
   margin-left: 10px;
-}
+}*/
 
 .inputEditable-edit {
   color: #004893;
+  text-decoration: none;
 }
 
 .inputEditable-text {
@@ -23,22 +40,34 @@
 
 .inputEditable-cancel {
   color: #999;
+  text-decoration: none;
 }
 
 .inputEditable-input {
-  border: 1px solid #ccc;
   font-family: inherit;
   font-size: inherit;
+  box-shadow: 2px 2px 2px rgba(0,0,0, 0.05) inset;
+  background-color: #fff;
+  transition: border-color 0.25s ease, background-color 0.25s ease;
 }
 
 .inputEditable-input:invalid {
-  border-color: orange;
+  border-color: #d9534f;
+  font-style: italic;
+  /*background-color: #fcf8e3;*/
 }
 
 .inputEditable-input:focus:valid {
-  border-color: green;
+  border-color: #5cb85c;
 }
 
-.inputEditable-submit {  
+.inputEditable-submit {
+  margin-left: 10px;
+  background-color: #fafafa;
   font-weight: bold;
+}
+
+.inputEditable-input[disabled] {
+  background-color: #eee;
+  color: #999
 }

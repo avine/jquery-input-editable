@@ -26,19 +26,22 @@
     * { outline: none; }
 
     body {
+      margin: 20px;
       font-size: 16px;
       font-family: Arial;
     }
     #log {
       margin: 20px 0;
-      max-width: 300px;
-      overflow: auto;
-      border: 1px solid #ddd;
-      padding: 0 20px;
-      font: 14px normal monospace;
+      max-width: 500px;
+      min-height: 20px;
+      border: 1px dotted #ddd;
+      background-color: #fafafa;
+      padding: 0 10px;
+      font: 12px/18px monospace;
+      cursor: pointer;
     }
     #log * {
-      margin: 20px 0;
+      margin: 15px 30px;
     }
   </style>
 </head>
@@ -48,7 +51,7 @@
   <h2>jQuery plugin that make any dom element editable</h2>
 
   <form action="#" id="edit1" class="edit-me" data-required data-placeholder="Fill me!" data-description="(edit me!)">
-    15@a.com
+    hello@world.fr
   </form>
 
   <br />
@@ -57,12 +60,10 @@
     30
   </form>
 
-  <ol id="log"></ol>
+  <ol id="log" title="Click to empty"></ol>
 
   <script>
-
     var $editMe = $('.edit-me');
-
     var $log = $('#log');
 
     var events = [
@@ -72,9 +73,6 @@
     }).join(' ');
 
     $editMe.on(events, function (e, data) {
-      if ($log.children().length >= 5) {
-        //$log.html('');
-      }
       $log.append('<li>' + e.type + (data ? ' : ' + JSON.stringify(data) : '') + '</li>');
     });
 
@@ -115,15 +113,13 @@
     */
 
     $('input').on('invalid', function (e) {
-      if ($log.children().length >= 5) {
-        //$log.html('');
-      }
       $log.append('<li>[native] ' + e.type + ' : ' + e.target.validationMessage + '</li>');
     });
 
     $log.click(function () {
       $log.html('');
     });
+
   </script>
 
 </body>
