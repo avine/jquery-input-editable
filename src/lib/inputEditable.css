@@ -6,36 +6,34 @@
 
 .inputEditable-text-wrap > *,
 .inputEditable-input-wrap > * {
-  display: inline-block;
-  margin: 0;
-  padding: 3px 6px;
-  border-radius: 3px;
-  border: 1px solid transparent;
+  display: inherit;
   line-height: inherit;
   vertical-align: middle;
+  margin: 0;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  border-radius: 3px;
+  border: 1px solid transparent;
 }
 
-.inputEditable-input,
-.inputEditable-submit {
-  border-color: #ccc;
-}
-
-/*.inputEditable-text-wrap > :nth-child(n + 2),
+.inputEditable-text-wrap > :nth-child(n + 2),
 .inputEditable-input-wrap > :nth-child(n + 2) {
   margin-left: 10px;
-}*/
+}
 
 .inputEditable-edit {
-  color: #004893;
+  color: #337ab7;
   text-decoration: none;
 }
 
-.inputEditable-text {
+.inputEditable-text,
+.inputEditable-submit {
   cursor: pointer;
 }
 
 .inputEditable-description {  
-  color: #777;
+  color: #ccc;
+  font-size: 0.85em;
 }
 
 .inputEditable-cancel {
@@ -43,10 +41,15 @@
   text-decoration: none;
 }
 
-.inputEditable-input {
+.inputEditable-input,
+.inputEditable-submit {
   font-family: inherit;
   font-size: inherit;
+}
+
+.inputEditable-input {
   box-shadow: 2px 2px 2px rgba(0,0,0, 0.05) inset;
+  border-color: #ccc;
   background-color: #fff;
   transition: border-color 0.25s ease, background-color 0.25s ease;
 }
@@ -54,20 +57,31 @@
 .inputEditable-input:invalid {
   border-color: #d9534f;
   font-style: italic;
-  /*background-color: #fcf8e3;*/
 }
 
 .inputEditable-input:focus:valid {
   border-color: #5cb85c;
 }
 
+.inputEditable-input[disabled] {
+  border-color: #d7d7d7;
+  background-color: #f7f7f7;
+  color: #979797;
+}
+
 .inputEditable-submit {
-  margin-left: 10px;
-  background-color: #fafafa;
+  background-color: transparent;
+  color: #337ab7;
   font-weight: bold;
 }
 
-.inputEditable-input[disabled] {
-  background-color: #eee;
-  color: #999
+.inputEditable-text,
+.inputEditable-input {
+  padding-right: 6px;
+  padding-left: 6px;
+}
+
+.inputEditable img {
+  height: 20px;
+  vertical-align: middle;
 }

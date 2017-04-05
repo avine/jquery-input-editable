@@ -6,13 +6,13 @@
 
   <title>inputEditable</title>
 
-  <link rel="stylesheet" href="inputEditable.css" />
+  <link rel="stylesheet" href="lib/inputEditable.css" />
 
   <script src="../node_modules/jquery/dist/jquery.min.js"></script>
-  <script src="inputEditable.js"></script>
+  <script src="lib/inputEditable.js"></script>
 
   <!--
-  <script src="inputEditable.shim.js"></script>
+  <script src="lib/inputEditable.shim.js"></script>
   <script>
     $.fn.inputEditable.shim();
     $(document).ready(function () {
@@ -30,9 +30,13 @@
       font-size: 16px;
       font-family: Arial;
     }
+    hr {
+      margin: 15px 0;
+      border: none;
+      border-top: 1px dotted #ccc;
+    }
     #log {
-      margin: 20px 0;
-      max-width: 500px;
+      margin: 30px 0;
       min-height: 20px;
       border: 1px dotted #ddd;
       background-color: #fafafa;
@@ -43,28 +47,60 @@
     #log * {
       margin: 15px 30px;
     }
+    #log:before {
+      content: "Log (click to cancel)";
+      color: #999;
+    }
+    footer {
+      font-size: 14px;
+    }
+    footer a {
+      color: #999;
+      text-decoration: none;
+    }
+    footer img {
+      height: 20px;
+      vertical-align: middle;
+    }
   </style>
 </head>
 <body>
 
   <h1>inputEditable</h1>
-  <h2>jQuery plugin that make any dom element editable</h2>
+  <p>jQuery plugin that make any dom element editable.<br /><br /></p>
 
-  <form action="#" id="edit1" class="edit-me" data-required data-placeholder="Fill me!" data-description="(edit me!)">
+  <form action="#" id="edit1" class="edit-me" data-required data-placeholder="Email" data-description="(edit me)">
     hello@world.fr
   </form>
 
-  <br />
+  <hr />
 
-  <form action="#" id="edit2" class="edit-me" data-placeholder="Fill me!" data-description="(edit me!)">
+  <form action="#" id="edit2" class="edit-me" data-placeholder="Number" data-description="(edit me)">
     30
+  </form>
+
+  <hr />
+
+  <form action="#" id="edit3" class="edit-me" data-placeholder="Anything..." data-description="(edit me)">
+    Hello world!
   </form>
 
   <ol id="log" title="Click to empty"></ol>
 
+  <footer><a href="https://github.com/avine/inputEditable">
+    <img src="img/github.svg" /> Github</a></footer>
+
   <script>
     var $editMe = $('.edit-me');
     var $log = $('#log');
+
+    function addLog(e, log) {
+      if ($log.children().length >= 10) {
+        $log.html('');
+      }
+      var id = e.target.id ? e.target.id + ': ' : '';
+      $log.append('<li>' + id + e.type + ' ' + log + '</li>');
+    }
 
     var events = [
       'ready', 'edit', 'cancel', 'notvalid', 'request', 'resolve', 'reject'
@@ -73,7 +109,7 @@
     }).join(' ');
 
     $editMe.on(events, function (e, data) {
-      $log.append('<li>' + e.type + (data ? ' : ' + JSON.stringify(data) : '') + '</li>');
+      addLog(e, data ? JSON.stringify(data) : '');
     });
 
     $('#edit1').inputEditable({
@@ -104,6 +140,14 @@
       toggleAtRight: true
     });
 
+    $('#edit3').inputEditable({
+      action: {
+        edit: '<img src="img/pencil-square.svg" />',
+        cancel: '<img src="img/remove.svg" />',
+        submit: '<img src="img/check-circle.svg" />'
+      }
+    });
+
     /*
     // Use this to emulate old browser...
     $('input').on('invalid', function (e) {
@@ -113,7 +157,7 @@
     */
 
     $('input').on('invalid', function (e) {
-      $log.append('<li>[native] ' + e.type + ' : ' + e.target.validationMessage + '</li>');
+      addLog(e,  e.target.validationMessage + ' [native]');
     });
 
     $log.click(function () {
