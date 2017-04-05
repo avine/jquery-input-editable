@@ -21,7 +21,7 @@
           var customError = newValue ? this.options.customValidity.call(e.target, newValue) : '';
           if (customError) {
             this.isInvalid = true;
-            this.dispatch('invalid', { value: newValue, message: customError });
+            this.dispatch('notvalid', { value: newValue, message: customError });
           } else {
             this.isInvalid = false;
           }

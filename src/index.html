@@ -34,11 +34,11 @@
       max-width: 300px;
       overflow: auto;
       border: 1px solid #ddd;
-      padding: 10px;
+      padding: 0 20px;
       font: 14px normal monospace;
     }
-    #log p {
-      border-bottom: 1px dotted #ddd;
+    #log * {
+      margin: 20px 0;
     }
   </style>
 </head>
@@ -57,7 +57,7 @@
     30
   </form>
 
-  <div id="log"></div>
+  <ol id="log"></ol>
 
   <script>
 
@@ -66,16 +66,16 @@
     var $log = $('#log');
 
     var events = [
-      'ready', 'edit', 'cancel', 'invalid', 'request', 'resolve', 'reject'
+      'ready', 'edit', 'cancel', 'notvalid', 'request', 'resolve', 'reject'
     ].map(function (event) {
       return event + '.inputEditable';
     }).join(' ');
 
     $editMe.on(events, function (e, data) {
       if ($log.children().length >= 5) {
-        $log.html('');
+        //$log.html('');
       }
-      $log.prepend('<p>' + e.type + ' ' + (data ? JSON.stringify(data) : '') + '</p>');
+      $log.append('<li>' + e.type + (data ? ' : ' + JSON.stringify(data) : '') + '</li>');
     });
 
     $('#edit1').inputEditable({
@@ -116,9 +116,13 @@
 
     $('input').on('invalid', function (e) {
       if ($log.children().length >= 5) {
-        $log.html('');
+        //$log.html('');
       }
-      $log.prepend('<p>' + e.type + ' ' + e.target.validationMessage + '</p>');
+      $log.append('<li>[native] ' + e.type + ' : ' + e.target.validationMessage + '</li>');
+    });
+
+    $log.click(function () {
+      $log.html('');
     });
   </script>
 
