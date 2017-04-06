@@ -6,15 +6,13 @@
   var pluginName = 'inputEditable';
 
   var settings = {
-    // Customize the way to set the input value
-    // (this is usefull when the input element is handled by another jQuery plugin).
-    set: function (value) {
-      $(this).val(value);
-    },
 
-    // Customize the way to get the input value.
-    get: function () {
-      return $(this).val();
+    // Set the initial input value using plugin option
+    value: '',
+
+    // Render the text from the value (one-way data binding from 'edit' to 'view' mode)
+    bindValue: function (value) {
+      $(this).html(value);
     },
 
     // Custom input validation on client-side (before submit).
@@ -49,7 +47,7 @@
     description: '',
 
     // Native input validation using type attribute (ie: email, number, ...)
-    type: false,
+    type: 'text',
 
     // Native input validation using constraints
     constraints: {
@@ -63,7 +61,7 @@
   };
 
   // Public methods
-  var methods = ['getInstance', 'getText', 'getValue'];
+  var methods = ['getInstance', 'getValue'];
 
   function InputEditable(element, options) {
     this.$element = $(element);
@@ -140,7 +138,8 @@
       </form>
     */
     initMarkup: function () {
-      this.initialText = (this.$element.text()).trim();
+      // The initial input value is the text of `this.$element` or `this.options.value`.
+      this.options.value = (this.$element.text()).trim() || this.options.value;
       this.$element.html('').addClass(this.getCss());
 
       this.$textWrap = $('<div>').addClass(this.getCss('text-wrap'));
@@ -153,11 +152,12 @@
     },
 
     fillTextWrap: function () {
-      var text = this.initialText || this.options.placeholder;
       var insert = this.options.toggleAtRight ? 'prependTo' : 'appendTo';
 
       this.$edit = this.getAction('edit').appendTo(this.$textWrap);
-      this.$text = $('<span>').addClass(this.getCss('text')).text(text)[insert](this.$textWrap);
+      this.$text = $('<span>').addClass(this.getCss('text'))[insert](this.$textWrap);
+
+      this.options.bindValue.call(this.$text[0], this.options.value);
 
       this.$description = $('<i>').addClass(this.getCss('description'));
       if (this.options.description) {
@@ -182,9 +182,9 @@
 
     getInputAttr: function () {
       var attr = {
-        value: this.initialText,
+        value: this.options.value,
         placeholder: this.options.placeholder,
-        type: this.options.type || 'text',
+        type: this.options.type,
       };
       var constraint;
       var value;
@@ -210,8 +210,7 @@
         e.preventDefault();
         if (!this.isDisabled) {
           // Reset the input value
-          this.options.set.call(this.$input[0], this.oldValue);
-
+          this.$input.val(this.oldValue);
           this.toggleMode();
           this.dispatch('cancel');
         }
@@ -287,7 +286,7 @@
     },
 
     resolve: function (newValue) {
-      this.updateText();
+      this.updateText(newValue);
       this.toggleMode();
       this.disable(false);
       this.dispatch('resolve', newValue);
@@ -334,20 +333,20 @@
       this.$element.trigger(event + '.' + pluginName, data);
     },
 
-    // Update the view-mode from the edit-mode (when resolve the Ajax request)
-    updateText: function () {
-      this.$text.text(this.getValue() || this.options.placeholder || '');
-    },
-
-    // Get the view-mode value (but not the placeholder)
-    getText: function () {
-      var text = this.$text.text();
-      return text !== this.options.placeholder ? text : '';
+    // Update the view-mode from the edit-mode (when resolving the Ajax request).
+    updateText: function (newValue) {
+      var css = this.getCss('placeholder');
+      if (newValue) {
+        this.$text.html('').removeClass(css); // Empty the text
+        this.options.bindValue.call(this.$text[0], newValue);
+      } else {
+        this.$text.html(this.options.placeholder).addClass(css);
+      }
     },
 
     // Get the edit-mode value
     getValue: function () {
-      return this.options.get.call(this.$input[0]);
+      return this.$input.val();
     },
 
     getAction: function (action) {

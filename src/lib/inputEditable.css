@@ -31,6 +31,11 @@
   cursor: pointer;
 }
 
+.inputEditable-placeholder {
+  color: #bbb;
+  font-style: italic;
+}
+
 .inputEditable-description {  
   color: #ccc;
   font-size: 0.85em;
