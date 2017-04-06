@@ -4,9 +4,19 @@
   "description": "jQuery plugin that make any dom element editable",
   "main": "index.js",
   "scripts": {
+    "clean": "shx rm -rf dist/",
+    "mkdir": "shx mkdir -p dist/vendor/jasmine/",
+    "cp:1": "shx cp node_modules/jasmine-core/lib/jasmine-core/*.* dist/vendor/jasmine/",
+    "cp:2": "shx cp node_modules/jquery/dist/jquery.min.js dist/vendor/",
+    "cp:3": "shx cp node_modules/jasmine-jquery/lib/jasmine-jquery.js dist/vendor/jasmine-jquery.js",
+    "cp:4": "shx cp -r src/* dist/",
+    "cp": "npm run cp:1 -s && npm run cp:2 -s && npm run cp:3 -s && npm run cp:4 -s",
+    "build": "npm run clean -s && npm run mkdir -s && npm run cp -s",
+    "watch": "chokidar 'src/**' -c 'npm run cp:4'",
+    "eslint": "eslint src/**/*.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "eslint": "eslint src/*.js",
-    "start": "http-server ./ -o -c-1"
+    "start": "http-server dist/ -o -c-1",
+    "dev": "npm run build -s && (npm run watch -s & npm run start -s)"
   },
   "repository": {
     "type": "git",
@@ -22,7 +32,11 @@
     "jquery": "^3.2.1"
   },
   "devDependencies": {
+    "chokidar-cli": "^1.2.0",
     "eslint": "^3.19.0",
-    "http-server": "^0.9.0"
+    "http-server": "^0.9.0",
+    "jasmine-core": "^2.5.2",
+    "jasmine-jquery": "^2.1.1",
+    "shx": "^0.2.2"
   }
 }

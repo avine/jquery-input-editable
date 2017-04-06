@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+  <title>inputEditable</title>
+
+  <link rel="stylesheet" href="../lib/inputEditable.css" />
+
+  <script src="../vendor/jquery.min.js"></script>
+  <script src="../lib/inputEditable.js"></script>
+
+
+  <!--
+  <script src="lib/inputEditable.shim.js"></script>
+  <script>
+    $.fn.inputEditable.shim();
+    $(document).ready(function () {
+      // Use this to emulate old browser...
+      $('form').each(function () { this.noValidate = true; });
+    });
+  </script>
+  -->
+
+  <style>
+    * {
+      outline: none;
+    }
+    body {
+      margin: 20px;
+      font-size: 16px;
+      font-family: Arial;
+    }
+    hr {
+      margin: 15px 0;
+      border: none;
+      border-top: 1px dotted #ccc;
+    }
+    #log {
+      margin: 30px 0;
+      min-height: 20px;
+      border: 1px dotted #ddd;
+      background-color: #fafafa;
+      padding: 0 10px;
+      font: 12px/18px monospace;
+      cursor: pointer;
+    }
+    #log * {
+      margin: 15px 30px;
+    }
+    #log:before {
+      content: "Event log (click to cancel)";
+      color: #999;
+    }
+    footer {
+      font-size: 14px;
+    }
+    footer a {
+      color: #999;
+      text-decoration: none;
+    }
+    footer img {
+      height: 20px;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>inputEditable</h1>
+  <p>jQuery plugin that make any dom element editable.<br /><br /></p>
+
+  <form action="#" id="edit1" class="edit-me" data-required data-placeholder="Email" data-description="(edit me)">
+    hello@world.fr
+  </form>
+
+  <hr />
+
+  <form action="#" id="edit2" class="edit-me" data-placeholder="Number" data-description="(edit me)">
+    30
+  </form>
+
+  <hr />
+
+  <form action="#" id="edit3" class="edit-me" data-placeholder="Date" data-description="(edit me)">
+    2017-04-06
+  </form>
+
+  <ol id="log" title="Click to empty"></ol>
+
+  <footer><a href="https://github.com/avine/inputEditable"><img src="../img/github.svg" /> View on Github</a></footer>
+
+  <script>
+    var $editMe = $('.edit-me');
+    var $log = $('#log').click(function () {
+      $log.html('');
+    });
+    var events = [
+      'ready', 'edit', 'cancel', 'notvalid', 'request', 'resolve', 'reject'
+    ].map(function (event) {
+      return event + '.inputEditable';
+    }).join(' ');
+
+    $editMe.on(events, function (e, data) {
+      addLog(e, data ? JSON.stringify(data) : '');
+    });
+
+    $('#edit1').inputEditable({
+      type: 'email',
+      customValidity: function (value) {
+        return !/\.fr$/.test(value) ? 'Must end with .fr' : '';
+      },
+      submit: function(value, resolve) {
+        setTimeout(resolve, 1000);
+      }
+    });
+
+    $('#edit2').inputEditable({
+      customValidity: function (value) {
+        return !/^[0-9]+$/.test(value) ? 'Number expected :-(' : '';
+      },
+      constraints: {
+        maxlength: 10
+      },
+      submit: function(value, resolve) {
+        setTimeout(resolve, 1000);
+      },
+      toggleAtRight: true
+    });
+
+    $('#edit3').inputEditable({
+      bindValue: function (value) {
+        var date = new Date(value).toLocaleString('en-us', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        });
+        $(this).html('<span style="color:#999">Date: </span>' + date);
+      },
+      action: {
+        edit: '<img src="../img/pencil-square.svg" />',
+        cancel: '<img src="../img/remove.svg" />',
+        submit: '<img src="../img/check-circle.svg" />'
+      },
+      type: 'date',
+      submit: function(value, resolve) {
+        setTimeout(resolve, 1000);
+      }
+    });
+
+    /*
+    // Use this to emulate old browser...
+    $('input').on('invalid', function (e) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    });
+    */
+
+    $('input').on('invalid', function (e) {
+      addLog(e,  e.target.validationMessage + ' [native]');
+    });
+
+    function addLog(e, log) {
+      if ($log.children().length >= 10) {
+        //$log.html('');
+      }
+      var id = e.target.id ? e.target.id + ': ' : '';
+      $log.append('<li>' + id + e.type + ' ' + log + '</li>');
+    }
+
+  </script>
+
+</body>
+</html>
